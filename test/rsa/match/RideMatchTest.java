@@ -79,7 +79,7 @@ public class RideMatchTest extends TestData {
 	 * Check that matches have different IDs 
 	 */
 	@Test
-	public void testGetId() {
+	public void testGetId() throws RideSharingAppException {
 		Set<Long> ids = new HashSet<>();
 		List<RideMatch> matches = new ArrayList<>();
 		

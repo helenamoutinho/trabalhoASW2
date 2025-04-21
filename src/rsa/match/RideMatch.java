@@ -15,6 +15,8 @@ public class RideMatch implements Serializable {
     private final Ride passengerRide;
     private final long id;
 
+    private static long counter = 0; // contador global para IDs únicos
+
     public RideMatch(Ride left, Ride right) throws RideSharingAppException {
         if (left == null || right == null) {
             throw new RideSharingAppException("Ride is null.");
@@ -26,7 +28,7 @@ public class RideMatch implements Serializable {
 
         this.driverRide = left.isDriver() ? left : right;
         this.passengerRide = left.isPassenger() ? left : right;
-        this.id = driverRide.getId(); // ou: RideMatch.counter++
+        this.id = counter++; // garante IDs únicos
     }
 
     public long getId() {
