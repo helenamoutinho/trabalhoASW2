@@ -61,7 +61,7 @@ public class RideTest extends TestData {
 	 * Check that rides have different IDs 
 	 */
 	@Test
-	public void testGetId() {
+	public void testGetId() throws RideSharingAppException {
 		Set<Long> rides = new HashSet<>();
 		
 		for(int i=0; i<MANY_OBJECTS; i++)
@@ -104,7 +104,7 @@ public class RideTest extends TestData {
 	 * Check is driver
 	 */
 	@Test
-	public void testIsDriver() {
+	public void testIsDriver() throws RideSharingAppException {
 		assertTrue(ride.isDriver());
 		
 		ride = new Ride(user,from,to,null,COSTS[0]);
@@ -116,7 +116,7 @@ public class RideTest extends TestData {
 	 * Check ride role getter
 	 */
 	@Test
-	public void testGetRideRole() {
+	public void testGetRideRole() throws RideSharingAppException {
 		assertEquals(RideRole.DRIVER,ride.getRideRole());
 		
 		ride = new Ride(user,from,to,null,COSTS[0]);
@@ -127,7 +127,7 @@ public class RideTest extends TestData {
 	 * Check is passenger
 	 */
 	@Test
-	public void testIsPassenger() {
+	public void testIsPassenger() throws RideSharingAppException{
 		assertFalse(ride.isPassenger());
 		
 		ride = new Ride(user,from,to,null,COSTS[0]);
@@ -174,7 +174,7 @@ public class RideTest extends TestData {
 	 * Check match
 	 */
 	@Test
-	public void testMatch() {
+	public void testMatch() throws RideSharingAppException {
 		Ride other = new Ride(user,from,to,null,COSTS[0]);
 		RideMatch someMatch = new RideMatch(ride,other);
 		
@@ -187,7 +187,7 @@ public class RideTest extends TestData {
 	 * Check is matched
 	 */
 	@Test
-	public void testIsMatched() {
+	public void testIsMatched() throws RideSharingAppException {
 		Ride other = new Ride(user,from,to,null,COSTS[0]);
 		assertFalse(ride.isMatched());
 		

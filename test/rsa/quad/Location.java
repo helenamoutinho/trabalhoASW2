@@ -1,5 +1,6 @@
 package rsa.quad;
 
+import rsa.shared.HasPoint;
 
 /**
  * Helper test class implementing the HasPoint interface
