@@ -10,6 +10,8 @@ import rsa.TestData;
 import rsa.ride.RideRole;
 import rsa.user.*;
 
+import rsa.match.Matcher;
+
 import java.util.SortedSet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

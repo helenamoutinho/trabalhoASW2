@@ -51,6 +51,12 @@ public class PointQuadtree<T extends HasPoint> implements Iterable<T>, Serializa
         root = root.insertReplace(point);
     }
 
+    public void collectNear(Location center, double radius, List<T> result) {
+        if (root != null) {
+            root.collectNear(center, radius, result);
+        }
+    }
+
     public boolean remove(T point) {
         return root.remove(point);
     }

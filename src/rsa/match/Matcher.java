@@ -1,11 +1,13 @@
 package rsa.match;
 
-import rsa.quad.PointQuadtree;
 import rsa.ride.Ride;
 import rsa.ride.RideRole;
 import rsa.ride.RideMatchSorter;
-import rsa.RideSharingAppException;
+import rsa.user.User;
+import rsa.user.UserStars;
+import rsa.quad.PointQuadtree;
 
+import rsa.RideSharingAppException;
 
 import java.io.Serializable;
 import java.util.*;
@@ -13,71 +15,104 @@ import java.util.*;
 public class Matcher implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private PointQuadtree<Ride> rides;
-    private Map<Long, RideMatch> matches = new HashMap<>();
-    private double radius;
+    private static Location topLeft;
+    private static Location bottomRight;
+    private static double radius;
 
-    public Matcher(double width, double height, double margin, double radius) {
-        this.rides = new PointQuadtree<>(width, height, margin);
-        this.radius = radius;
+    private final List<Ride> rides = new ArrayList<>();
+    private final Map<Long, RideMatch> matches = new TreeMap<>();
+    private final PointQuadtree<Ride> rideTree = new PointQuadtree<>(0, 0, 1000, 1000); // ajustável
+
+    public static void setTopLeft(Location loc) {
+        topLeft = loc;
     }
 
-    public void addRide(Ride ride) {
-        rides.insert(ride);
+    public static void setBottomRight(Location loc) {
+        bottomRight = loc;
+    }
+
+    public static void setRadius(double r) {
+        radius = r;
+    }
+
+    public static Location getTopLeft() {
+        return topLeft;
+    }
+
+    public static Location getBottomRight() {
+        return bottomRight;
+    }
+
+    public static double getRadius() {
+        return radius;
+    }
+
+    public long addRide(User user, Location from, Location to, String plate, float cost) throws RideSharingAppException {
+        Ride ride = new Ride(user, from, to, plate, cost);
+        rides.add(ride);
+        rideTree.insert(ride);
         tryToMatch(ride);
+        return ride.getId();
     }
 
-    public RideMatch getMatch(long matchId) {
-        return matches.get(matchId);
-    }
-
-    public void updateRide(Ride ride, Location current) {
+    public SortedSet<RideMatch> updateRide(long rideId, Location current) {
+        Ride ride = findRideById(rideId);
+        if (ride == null) return new TreeSet<>();
         ride.setCurrent(current);
-        tryToMatch(ride);
+        return tryToMatch(ride);
     }
 
-    private void tryToMatch(Ride ride) {
-        if (ride.isMatched()) return;
+    public void acceptMatch(long rideId, long matchId) {
+        Ride ride = findRideById(rideId);
+        if (ride == null) return;
+        RideMatch match = matches.get(matchId);
+        if (match == null) return;
+        ride.setMatch(match);
+    }
 
+    public void concludeRide(long rideId, UserStars stars) {
+        Ride ride = findRideById(rideId);
+        if (ride == null || ride.getMatch() == null) return;
+
+        RideMatch match = ride.getMatch();
         RideRole role = ride.getRideRole();
-        RideRole opposite = role == RideRole.DRIVER ? RideRole.PASSENGER : RideRole.DRIVER;
 
-        List<Ride> nearby = rides.findNear(ride.getCurrent(), radius);
-
-        List<Ride> candidates = new ArrayList<>();
-        for (Ride r : nearby) {
-            if (!r.isMatched() && r.getRideRole() == opposite &&
-                    closeEnough(ride.getTo(), r.getTo())) {
-                candidates.add(r);
-            }
-        }
-
-        if (candidates.isEmpty()) return;
-
-        Comparator<RideMatch> comparator = ((RideMatchSorter) ride).getComparator();
-        List<RideMatch> matchOptions = new ArrayList<>();
-
-        for (Ride other : candidates) {
-            try {
-                matchOptions.add(new RideMatch(ride, other));
-            } catch (RideSharingAppException e) {
-                throw new RuntimeException("Erro ao tentar emparelhar boleias", e);
-            }
-        }
-
-        matchOptions.sort(comparator);
-
-        RideMatch best = matchOptions.get(0);
-        best.getRide(RideRole.DRIVER).setMatch(best);
-        best.getRide(RideRole.PASSENGER).setMatch(best);
-        matches.put(best.getId(), best);
+        ride.getUser().addStars(stars, role);
+        ride.setMatch(null);
+        matches.remove(match.getId());
     }
 
 
-    private boolean closeEnough(Location a, Location b) {
-        double dx = a.x() - b.x();
-        double dy = a.y() - b.y();
-        double d2 = dx * dx + dy * dy;
-        return d2 <= radius * radius;
+    private Ride findRideById(long id) {
+        for (Ride ride : rides) {
+            if (ride.getId() == id) return ride;
+        }
+        return null;
+    }
+
+    private SortedSet<RideMatch> tryToMatch(Ride ride) {
+        RideRole role = ride.getRideRole();
+        RideRole opposite = (role == RideRole.DRIVER) ? RideRole.PASSENGER : RideRole.DRIVER;
+
+        List<Ride> nearby = new ArrayList<>();
+        rideTree.collectNear(ride.getCurrent(), radius, nearby);
+
+        SortedSet<RideMatch> results = new TreeSet<>(((RideMatchSorter) ride).getComparator());
+
+        for (Ride other : nearby) {
+            if (other.getRideRole() == opposite &&
+                    other.getMatch() == null &&
+                    ride.getTo().x() == other.getTo().x() &&
+                    ride.getTo().y() == other.getTo().y()) {
+                try {
+                    RideMatch match = new RideMatch(ride, other);
+                    results.add(match);
+                    matches.put(match.getId(), match);
+                } catch (RideSharingAppException ignored) {}
+            }
+        }
+
+        return results;
     }
 }
+
