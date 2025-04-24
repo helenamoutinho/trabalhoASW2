@@ -136,4 +136,24 @@ public class NodeTrieTest {
 
 		assertFalse(node.toString().startsWith("@"), "LeafTrie@");
 	}
+
+	@Test
+	public void testQuadrantOf() {
+		// NW: x < midX, y > midY
+		Location nw = new Location(TOP_LEFT_X + 1, TOP_LEFT_Y - 1);
+		assertEquals(Trie.Quadrant.NW, node.quadrantOf(nw));
+
+		// NE: x > midX, y > midY
+		Location ne = new Location(BOTTOM_RIGHT_X - 1, TOP_LEFT_Y - 1);
+		assertEquals(Trie.Quadrant.NE, node.quadrantOf(ne));
+
+		// SW: x < midX, y < midY
+		Location sw = new Location(TOP_LEFT_X + 1, BOTTOM_RIGHT_Y + 1);
+		assertEquals(Trie.Quadrant.SW, node.quadrantOf(sw));
+
+		// SE: x > midX, y < midY
+		Location se = new Location(BOTTOM_RIGHT_X - 1, BOTTOM_RIGHT_Y + 1);
+		assertEquals(Trie.Quadrant.SE, node.quadrantOf(se));
+	}
+
 }

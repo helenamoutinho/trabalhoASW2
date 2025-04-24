@@ -58,5 +58,15 @@ public class RideMatch implements Serializable {
     public float getCost() {
         return driverRide.getCost();
     }
+
+    public boolean matchable() {
+        // Ambos os rides devem existir, estar por emparelhar e ir para o mesmo destino
+        return driverRide != null &&
+                passengerRide != null &&
+                driverRide.getMatch() == null &&
+                passengerRide.getMatch() == null &&
+                driverRide.getTo().equals(passengerRide.getTo());
+    }
+
 }
 

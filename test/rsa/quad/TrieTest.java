@@ -2,8 +2,7 @@ package rsa.quad;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test on Trie, the abstract tree common to both types of trie of a quadtree.
@@ -38,5 +37,20 @@ public class TrieTest {
 		Trie.setCapacity(CAPACITY);
 		assertEquals(CAPACITY, Trie.getCapacity());
 	}
+
+	@Test
+	public void testOverlapsCoordinates() {
+		Trie<Location> trie = new LeafTrie<>(0, 0, 10, 10);
+
+		// Dentro do quadrado
+		assertTrue(trie.overlaps(5, 5, 1));
+
+		// Fora do quadrado
+		assertFalse(trie.overlaps(20, 20, 1));
+
+		// Tocando na borda
+		assertTrue(trie.overlaps(10, 10, 1));
+	}
+
 
 }

@@ -116,4 +116,16 @@ public class NodeTrie<T extends HasPoint> extends Trie<T> {
     public void accept(Visitor<T> visitor) {
         visitor.visit(this);
     }
+
+    public Quadrant quadrantOf(T point) {
+        double x = point.x();
+        double y = point.y();
+
+        if (x < midX) {
+            return (y < midY) ? Quadrant.SW : Quadrant.NW;
+        } else {
+            return (y < midY) ? Quadrant.SE : Quadrant.NE;
+        }
+    }
+
 }

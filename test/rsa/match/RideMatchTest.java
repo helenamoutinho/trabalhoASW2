@@ -74,7 +74,16 @@ public class RideMatchTest extends TestData {
 		assertNotNull(match);
 	}
 
-	
+	/**
+	 * Check if match is valid (matchable)
+	 */
+	@Test
+	public void testMatchable() {
+		assertEquals(true, match.matchable());
+	}
+
+
+
 	/**
 	 * Check that matches have different IDs 
 	 */

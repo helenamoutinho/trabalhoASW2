@@ -42,6 +42,14 @@ public abstract class Trie<T extends HasPoint> implements Element<T>, Serializab
         return Math.sqrt(dx * dx + dy * dy);
     }
 
+    public boolean overlaps(double x, double y, double radius) {
+        double closestX = Math.max(minX, Math.min(x, maxX));
+        double closestY = Math.max(minY, Math.min(y, maxY));
+        double dx = closestX - x;
+        double dy = closestY - y;
+        return dx * dx + dy * dy <= radius * radius;
+    }
+
     public abstract Trie<T> insert(T point);
     public abstract Trie<T> insertReplace(T point);
     public abstract boolean remove(T point);
