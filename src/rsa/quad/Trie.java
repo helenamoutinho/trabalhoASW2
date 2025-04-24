@@ -1,12 +1,13 @@
 package rsa.quad;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Set;
 import rsa.match.Location;
 import rsa.shared.HasPoint;
 
-public abstract class Trie<T extends HasPoint> implements Serializable {
+import java.io.Serializable;
+import java.util.List;
+import java.util.Set;
+
+public abstract class Trie<T extends HasPoint> implements Element<T>, Serializable {
     private static final long serialVersionUID = 1L;
 
     protected double minX, minY, maxX, maxY;
@@ -41,10 +42,6 @@ public abstract class Trie<T extends HasPoint> implements Serializable {
         return Math.sqrt(dx * dx + dy * dy);
     }
 
-
-
-
-
     public abstract Trie<T> insert(T point);
     public abstract Trie<T> insertReplace(T point);
     public abstract boolean remove(T point);
@@ -54,4 +51,9 @@ public abstract class Trie<T extends HasPoint> implements Serializable {
     public abstract void collectNear(Location center, double radius, List<T> points);
     public abstract void collectNear(double x, double y, double radius, Set<T> points);
     public abstract void collectAll(Set<T> points);
+    public abstract void accept(Visitor<T> visitor);
+
+    public enum Quadrant {
+        NW, NE, SW, SE
+    }
 }

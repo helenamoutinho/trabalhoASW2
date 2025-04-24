@@ -1,7 +1,7 @@
 package rsa.quad;
 
-import rsa.shared.HasPoint;
 import rsa.match.Location;
+import rsa.shared.HasPoint;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +22,7 @@ public class LeafTrie<T extends HasPoint> extends Trie<T> {
         }
 
         NodeTrie<T> node = new NodeTrie<>(minX, minY, maxX, maxY);
-        for (T p : points) {
-            node.insert(p);
-        }
+        for (T p : points) node.insert(p);
         node.insert(point);
         return node;
     }
@@ -48,9 +46,7 @@ public class LeafTrie<T extends HasPoint> extends Trie<T> {
     @Override
     public T find(T point) {
         for (T p : points) {
-            if (p.x() == point.x() && p.y() == point.y()) {
-                return p;
-            }
+            if (p.x() == point.x() && p.y() == point.y()) return p;
         }
         return null;
     }
@@ -62,29 +58,19 @@ public class LeafTrie<T extends HasPoint> extends Trie<T> {
 
     @Override
     public void collectNear(Location center, double radius, List<T> result) {
-        double x = center.x();
-        double y = center.y();
-        double r2 = radius * radius;
-
+        double x = center.x(), y = center.y(), r2 = radius * radius;
         for (T p : points) {
-            double dx = p.x() - x;
-            double dy = p.y() - y;
-            if (dx * dx + dy * dy <= r2) {
-                result.add(p);
-            }
+            double dx = p.x() - x, dy = p.y() - y;
+            if (dx * dx + dy * dy <= r2) result.add(p);
         }
     }
 
     @Override
     public void collectNear(double x, double y, double radius, Set<T> result) {
         double r2 = radius * radius;
-
         for (T p : points) {
-            double dx = p.x() - x;
-            double dy = p.y() - y;
-            if (dx * dx + dy * dy <= r2) {
-                result.add(p);
-            }
+            double dx = p.x() - x, dy = p.y() - y;
+            if (dx * dx + dy * dy <= r2) result.add(p);
         }
     }
 
@@ -94,7 +80,7 @@ public class LeafTrie<T extends HasPoint> extends Trie<T> {
     }
 
     @Override
-    public String toString() {
-        return "LeafTrie with " + points.size() + " points";
+    public void accept(Visitor<T> visitor) {
+        visitor.visit(this);
     }
 }

@@ -9,7 +9,6 @@ import java.util.Set;
 public class NodeTrie<T extends HasPoint> extends Trie<T> {
 
     private final double midX, midY;
-
     private Trie<T> nw, ne, sw, se;
 
     public NodeTrie(double minX, double minY, double maxX, double maxY) {
@@ -111,5 +110,10 @@ public class NodeTrie<T extends HasPoint> extends Trie<T> {
             if (y < midY) se = quadrant;
             else ne = quadrant;
         }
+    }
+
+    @Override
+    public void accept(Visitor<T> visitor) {
+        visitor.visit(this);
     }
 }
